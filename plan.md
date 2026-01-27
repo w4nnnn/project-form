@@ -1,7 +1,7 @@
-# Rencana Pembuatan Aplikasi Form Seperti Google Form
+# Rencana Pembuatan Aplikasi Form Teknisi Bandara
 
 ## Tujuan
-Membuat aplikasi form online yang memiliki fungsionalitas mirip dengan Google Form, menggunakan teknologi Next.js dan komponen dari shadcn/ui.
+Membuat aplikasi form online untuk teknisi bandara yang memiliki fungsionalitas mirip dengan Google Form, menggunakan teknologi Next.js dan komponen dari shadcn/ui.
 
 ## Fitur Utama
 1. Pembuatan form dinamis
@@ -16,22 +16,23 @@ Membuat aplikasi form online yang memiliki fungsionalitas mirip dengan Google Fo
 10. Fitur kustomisasi form (branding, conditional logic)
 
 ## Teknologi yang Digunakan
-- Next.js 14+ (App Router)
+- Next.js 16.1.5 (App Router)
+- React 19.2.3
 - TypeScript
 - Tailwind CSS
 - shadcn/ui components
 - Zod (validasi skema)
 - Drizzle ORM untuk penyimpanan
 - Server Actions untuk operasi backend
-- SQLite sebagai database
-- NextAuth.js atau Lucia untuk otentikasi
-- PWA tools untuk mobile support
-- Libraries export (PDF, Excel, CSV)
+- SQLite (better-sqlite3) sebagai database
+- React Hook Form untuk manajemen form
+- Lucide React untuk ikon
+- Recharts untuk visualisasi data
 - ESLint dan Prettier untuk linting dan formatting
-- Vitest untuk unit testing
-- Playwright untuk E2E testing
+- Sonner untuk notifikasi
+- Date-fns untuk manipulasi tanggal
 
-## Struktur Proyek
+## Struktur Proyek Saat Ini
 ```
 app/
 ├── /auth
@@ -81,13 +82,20 @@ lib/
     └── conditionalLogic.ts
 ```
 
+## Status Awal Proyek
+- [x] Setup proyek Next.js 16.1.5
+- [x] Instalasi dan konfigurasi shadcn/ui
+- [x] Setup TypeScript
+- [x] Setup Tailwind CSS
+- [x] Instalasi dependensi utama (Zod, Drizzle ORM, React Hook Form, dll.)
+
 ## Tahapan Pengembangan
 
 ### Fase 1: Persiapan dan Setup
-- [ ] Setup proyek Next.js baru
-- [ ] Instalasi dan konfigurasi shadcn/ui
+- [x] Setup proyek Next.js baru
+- [x] Instalasi dan konfigurasi shadcn/ui
 - [ ] Setup database (Drizzle + SQLite)
-- [ ] Setup TypeScript
+- [x] Setup TypeScript
 - [ ] Konfigurasi Server Actions
 - [ ] Setup sistem otentikasi dan otorisasi
 - [ ] Implementasi Server Actions untuk semua endpoint API
@@ -184,7 +192,7 @@ lib/
 - [ ] Conditional Logic Editor
 
 ## Development Practices
-- [ ] Setup ESLint dan Prettier
+- [x] Setup ESLint dan Prettier
 - [ ] Setup Husky dan lint-staged
 - [ ] Conventional commits
 - [ ] Code review process
