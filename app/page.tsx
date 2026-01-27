@@ -1,7 +1,12 @@
-export default function Home() {
-  return (
-    <div>
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-    </div>
-  );
+export default async function Home() {
+  const session = await auth();
+
+  if (session) {
+    redirect("/dashboard");
+  } else {
+    redirect("/login");
+  }
 }
