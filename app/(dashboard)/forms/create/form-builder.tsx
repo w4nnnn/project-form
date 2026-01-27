@@ -1,6 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  type DragEndEvent,
+  type DraggableAttributes,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,6 +58,7 @@ import {
   Sliders,
   Star,
   X,
+  GripVertical,
 } from "lucide-react";
 import { createForm, updateForm } from "@/lib/actions/forms";
 import type { SubRole, Form as FormType, Question } from "@/lib/db/schema";
@@ -211,6 +224,18 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
     }
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = fields.findIndex((field) => field.id === active.id);
+    const newIndex = fields.findIndex((field) => field.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      move(oldIndex, newIndex);
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -308,19 +333,30 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
             </span>
           </div>
 
-          {fields.map((field, index) => (
-            <QuestionCard
-              key={field.id}
-              index={index}
-              form={form}
-              onRemove={() => remove(index)}
-              onMoveUp={() => moveQuestion(index, "up")}
-              onMoveDown={() => moveQuestion(index, "down")}
-              canMoveUp={index > 0}
-              canMoveDown={index < fields.length - 1}
-              canRemove={fields.length > 1}
-            />
-          ))}
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={fields.map((field) => field.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {fields.map((field, index) => (
+                <SortableQuestionCard
+                  key={field.id}
+                  id={field.id}
+                  index={index}
+                  form={form}
+                  onRemove={() => remove(index)}
+                  onMoveUp={() => moveQuestion(index, "up")}
+                  onMoveDown={() => moveQuestion(index, "down")}
+                  canMoveUp={index > 0}
+                  canMoveDown={index < fields.length - 1}
+                  canRemove={fields.length > 1}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
 
           {/* Add Question */}
           <Card className="border-dashed">
@@ -368,6 +404,34 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
   );
 }
 
+interface SortableQuestionCardProps extends QuestionCardProps {
+  id: string;
+}
+
+function SortableQuestionCard({ id, ...props }: SortableQuestionCardProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.9 : 1,
+    zIndex: isDragging ? 50 : 1,
+    position: "relative",
+  } as const;
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <QuestionCard
+        {...props}
+        dragHandleAttributes={attributes}
+        dragHandleListeners={listeners}
+        isDragging={isDragging}
+      />
+    </div>
+  );
+}
+
 interface QuestionCardProps {
   index: number;
   form: ReturnType<typeof useForm<FormValues>>;
@@ -377,6 +441,9 @@ interface QuestionCardProps {
   canMoveUp: boolean;
   canMoveDown: boolean;
   canRemove: boolean;
+  dragHandleAttributes?: DraggableAttributes;
+  dragHandleListeners?: ReturnType<typeof useSortable>["listeners"];
+  isDragging?: boolean;
 }
 
 function QuestionCard({
@@ -388,6 +455,9 @@ function QuestionCard({
   canMoveUp,
   canMoveDown,
   canRemove,
+  dragHandleAttributes,
+  dragHandleListeners,
+  isDragging,
 }: QuestionCardProps) {
   const questionType = form.watch(`questions.${index}.type`);
   const options = form.watch(`questions.${index}.options`) || [];
@@ -424,7 +494,7 @@ function QuestionCard({
   const questionTypeInfo = questionTypes.find((qt) => qt.value === questionType);
 
   return (
-    <Card>
+    <Card className={isDragging ? "border-primary/50 shadow-sm" : ""}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -439,6 +509,17 @@ function QuestionCard({
             )}
           </div>
           <div className="flex items-center gap-1">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="cursor-grab"
+              aria-label="Pindah pertanyaan"
+              {...(dragHandleAttributes || {})}
+              {...(dragHandleListeners || {})}
+            >
+              <GripVertical className="h-4 w-4" />
+            </Button>
             <Button
               type="button"
               variant="ghost"
