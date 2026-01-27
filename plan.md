@@ -86,7 +86,6 @@ lib/
 ### Fase 1: Persiapan dan Setup
 - [ ] Setup proyek Next.js baru
 - [ ] Instalasi dan konfigurasi shadcn/ui
-- [ ] Konfigurasi Tailwind CSS
 - [ ] Setup database (Drizzle + SQLite)
 - [ ] Setup TypeScript
 - [ ] Konfigurasi Server Actions
