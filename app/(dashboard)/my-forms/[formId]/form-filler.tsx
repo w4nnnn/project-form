@@ -20,6 +20,8 @@ import {
 import { Loader2, Send, Star, Upload, X, FileText } from "lucide-react";
 import { submitResponse } from "@/lib/actions/responses";
 import type { Form, Question } from "@/lib/db/schema";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { format } from "date-fns";
 
 interface FormFillerProps {
   form: Form & { questions: Question[] };
@@ -49,11 +51,11 @@ export function FormFiller({ form }: FormFillerProps) {
 
   const handleFileUpload = async (questionId: string, file: File) => {
     setUploadingFiles((prev) => ({ ...prev, [questionId]: true }));
-    
+
     try {
       const formData = new FormData();
       formData.append("file", file);
-      
+
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
@@ -83,14 +85,14 @@ export function FormFiller({ form }: FormFillerProps) {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    
+
     try {
       // Validate required fields
       for (const question of form.questions) {
         if (question.required) {
           const answer = answers[question.id];
           const fileUrl = fileUrls[question.id];
-          
+
           if (question.type === "file_upload") {
             if (!fileUrl) {
               toast.error(`Pertanyaan "${question.label}" wajib diisi`);
@@ -251,19 +253,51 @@ export function FormFiller({ form }: FormFillerProps) {
 
       case "date":
         return (
-          <Input
-            type="date"
-            value={(answers[question.id] as string) || ""}
-            onChange={(e) => updateAnswer(question.id, e.target.value)}
+          <DateTimePicker
+            date={
+              answers[question.id]
+                ? new Date(answers[question.id] as string)
+                : undefined
+            }
+            setDate={(date) =>
+              updateAnswer(question.id, date ? format(date, "yyyy-MM-dd") : "")
+            }
+            showTime={false}
+            placeholder="Pilih tanggal"
           />
         );
 
       case "time":
+        const timeValue = answers[question.id] as string;
+        // Construct a dummy date to display the time in the picker
+        const dateForTime = timeValue
+          ? new Date(`2000-01-01T${timeValue}`)
+          : undefined;
+
         return (
-          <Input
-            type="time"
-            value={(answers[question.id] as string) || ""}
-            onChange={(e) => updateAnswer(question.id, e.target.value)}
+          <DateTimePicker
+            date={dateForTime}
+            setDate={(date) =>
+              updateAnswer(question.id, date ? format(date, "HH:mm") : "")
+            }
+            timeOnly={true}
+            placeholder="Pilih waktu"
+          />
+        );
+
+      case "datetime":
+        return (
+          <DateTimePicker
+            date={
+              answers[question.id]
+                ? new Date(answers[question.id] as string)
+                : undefined
+            }
+            setDate={(date) =>
+              updateAnswer(question.id, date ? format(date, "yyyy-MM-dd HH:mm") : "")
+            }
+            showTime={true}
+            placeholder="Pilih tanggal & waktu"
           />
         );
 
@@ -352,11 +386,10 @@ export function FormFiller({ form }: FormFillerProps) {
                 className="p-1 hover:scale-110 transition-transform"
               >
                 <Star
-                  className={`h-8 w-8 ${
-                    value <= currentRating
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-300"
-                  }`}
+                  className={`h-8 w-8 ${value <= currentRating
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "text-gray-300"
+                    }`}
                 />
               </button>
             ))}

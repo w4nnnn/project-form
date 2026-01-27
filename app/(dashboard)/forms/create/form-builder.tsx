@@ -58,6 +58,7 @@ const questionTypes = [
   { value: "dropdown", label: "Dropdown", icon: ChevronDownSquare },
   { value: "date", label: "Tanggal", icon: Calendar },
   { value: "time", label: "Waktu", icon: Clock },
+  { value: "datetime", label: "Tanggal & Waktu", icon: Calendar },
   { value: "file_upload", label: "Upload File", icon: Upload },
   { value: "linear_scale", label: "Skala Linear", icon: Sliders },
   { value: "rating", label: "Rating", icon: Star },
@@ -72,6 +73,7 @@ const questionSchema = z.object({
     "dropdown",
     "date",
     "time",
+    "datetime",
     "file_upload",
     "linear_scale",
     "rating",
@@ -110,38 +112,38 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
     resolver: zodResolver(formSchema),
     defaultValues: initialData
       ? {
-          title: initialData.title,
-          description: initialData.description || "",
-          subRoleId: initialData.subRoleId || "",
-          isActive: initialData.isActive,
-          questions: initialData.questions.map((q) => ({
-            type: q.type,
-            label: q.label,
-            description: q.description || "",
-            options: q.options || [],
-            required: q.required,
-            scaleMin: q.scaleMin || undefined,
-            scaleMax: q.scaleMax || undefined,
-            scaleMinLabel: q.scaleMinLabel || undefined,
-            scaleMaxLabel: q.scaleMaxLabel || undefined,
-            ratingMax: q.ratingMax || undefined,
-          })),
-        }
+        title: initialData.title,
+        description: initialData.description || "",
+        subRoleId: initialData.subRoleId || "all",
+        isActive: initialData.isActive,
+        questions: initialData.questions.map((q) => ({
+          type: q.type,
+          label: q.label,
+          description: q.description || "",
+          options: q.options || [],
+          required: q.required,
+          scaleMin: q.scaleMin || undefined,
+          scaleMax: q.scaleMax || undefined,
+          scaleMinLabel: q.scaleMinLabel || undefined,
+          scaleMaxLabel: q.scaleMaxLabel || undefined,
+          ratingMax: q.ratingMax || undefined,
+        })),
+      }
       : {
-          title: "",
-          description: "",
-          subRoleId: "",
-          isActive: true,
-          questions: [
-            {
-              type: "short_text",
-              label: "",
-              description: "",
-              options: [],
-              required: false,
-            },
-          ],
-        },
+        title: "",
+        description: "",
+        subRoleId: "all",
+        isActive: true,
+        questions: [
+          {
+            type: "short_text",
+            label: "",
+            description: "",
+            options: [],
+            required: false,
+          },
+        ],
+      },
   });
 
   const { fields, append, remove, move } = useFieldArray({
@@ -154,7 +156,7 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
     try {
       const payload = {
         ...data,
-        subRoleId: data.subRoleId || null,
+        subRoleId: data.subRoleId === "all" ? null : data.subRoleId || null,
         questions: data.questions.map((q, index) => ({
           ...q,
           order: index,
@@ -261,7 +263,7 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Semua teknisi</SelectItem>
+                        <SelectItem value="all">Semua teknisi</SelectItem>
                         {subRoles.map((sr) => (
                           <SelectItem key={sr.id} value={sr.id}>
                             {sr.name}

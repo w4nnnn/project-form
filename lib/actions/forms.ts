@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { forms, questions, responses, answers, QuestionType } from "@/lib/db/schema";
 import { auth } from "@/lib/auth";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, or, isNull } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -17,6 +17,7 @@ const questionSchema = z.object({
     "dropdown",
     "date",
     "time",
+    "datetime",
     "file_upload",
     "linear_scale",
     "rating",
@@ -120,8 +121,11 @@ export async function getFormById(id: string) {
     throw new Error("Unauthorized");
   }
 
-  if (role === "teknisi" && form.subRoleId !== session.user.subRoleId) {
-    throw new Error("Form tidak tersedia untuk Anda");
+  if (role === "teknisi") {
+    // Allow if form is for all technicians (subRoleId is null) OR matches specific subRole
+    if (form.subRoleId !== null && form.subRoleId !== session.user.subRoleId) {
+      throw new Error("Form tidak tersedia untuk Anda");
+    }
   }
 
   return form;
@@ -291,7 +295,10 @@ export async function getMyForms() {
 
   return await db.query.forms.findMany({
     where: and(
-      eq(forms.subRoleId, session.user.subRoleId),
+      or(
+        eq(forms.subRoleId, session.user.subRoleId),
+        isNull(forms.subRoleId)
+      ),
       eq(forms.isActive, true)
     ),
     with: {

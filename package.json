@@ -1,14 +1,12 @@
 {
   "name": "form-teknisi-bandara",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
     "db:seed": "npx tsx lib/db/seed.ts"
   },
   "dependencies": {

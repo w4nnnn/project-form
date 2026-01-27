@@ -11,10 +11,6 @@ const db = drizzle(sqlite, { schema });
 async function seed() {
   console.log("🌱 Starting database seed...");
 
-  // Ensure tables exist before seeding
-  // We assume 'npm run db:push' has been run to sync schema
-  console.log("🔍 Checking database connection...");
-
   // Create sub-roles
   const subRoleData = [
     { id: uuidv4(), name: "Teknisi Mesin", description: "Teknisi yang menangani peralatan mesin dan mekanik" },
@@ -88,6 +84,140 @@ async function seed() {
       console.log(`✅ Teknisi created: teknisi${i + 1}@airport.com / teknisi123 (${subRole.name})`);
     } catch (error) {
       console.log(`⚠️ Teknisi ${i + 1} already exists`);
+    }
+  }
+
+  // Create sample forms
+  console.log("📝 Creating sample forms...");
+
+  // Get Admin ID (either freshly created or existing)
+  const adminUser = await db.query.users.findFirst({
+    where: (users, { eq }) => eq(users.email, "formadmin@airport.com"),
+  });
+
+  if (adminUser) {
+    // 1. Form Checklist Harian Mesin (Specific to Teknisi Mesin)
+    const mesinSubRole = subRoles.find(r => r.name === "Teknisi Mesin");
+
+    if (mesinSubRole) {
+      const formId = uuidv4();
+      try {
+        await db.insert(schema.forms).values({
+          id: formId,
+          title: "Checklist Harian Mesin Genset",
+          description: "Laporan pemeriksaan harian untuk unit Genset Utama",
+          subRoleId: mesinSubRole.id,
+          createdById: adminUser.id,
+          isActive: true,
+        });
+
+        // Questions for Genset Form
+        const questions = [
+          {
+            type: "short_text",
+            label: "Nomor Unit Genset",
+            description: "Masukkan nomor identifikasi unit",
+            required: true,
+            order: 0,
+          },
+          {
+            type: "multiple_choice",
+            label: "Kondisi Oli Mesin",
+            options: ["Normal", "Kotor/Perlu Ganti", "Volume Kurang", "Bocor"],
+            required: true,
+            order: 1,
+          },
+          {
+            type: "rating",
+            label: "Kondisi Fisik Unit",
+            description: "Berikan penilaian kondisi fisik secara umum",
+            ratingMax: 5,
+            required: true,
+            order: 2,
+          },
+          {
+            type: "file_upload",
+            label: "Foto Unit",
+            description: "Upload foto kondisi terkini unit",
+            required: false,
+            order: 3,
+          },
+        ];
+
+        for (const q of questions) {
+          await db.insert(schema.questions).values({
+            id: uuidv4(),
+            formId: formId,
+            ...q,
+          } as any);
+        }
+        console.log("✅ Form created: Checklist Harian Mesin Genset");
+      } catch (e) {
+        console.log("⚠️ Form Checklist Harian Mesin Genset might already exist");
+      }
+    }
+
+    // 2. Form Laporan Insiden (General - All Technicians)
+    const incidentFormId = uuidv4();
+    try {
+      await db.insert(schema.forms).values({
+        id: incidentFormId,
+        title: "Laporan Insiden Lapangan",
+        description: "Form untuk melaporkan kejadian tidak terduga atau kerusakan mendadak",
+        subRoleId: null, // For all technicians
+        createdById: adminUser.id,
+        isActive: true,
+      });
+
+      const incidentQuestions = [
+        {
+          type: "date",
+          label: "Tanggal Kejadian",
+          required: true,
+          order: 0,
+        },
+        {
+          type: "time",
+          label: "Waktu Kejadian",
+          required: true,
+          order: 1,
+        },
+        {
+          type: "dropdown",
+          label: "Lokasi",
+          options: ["Terminal 1", "Terminal 2", "Runway", "Hangar", "Parkir Area"],
+          required: true,
+          order: 2,
+        },
+        {
+          type: "paragraph",
+          label: "Kronologi Kejadian",
+          description: "Jelaskan detail kejadian secara rinci",
+          required: true,
+          order: 3,
+        },
+        {
+          type: "linear_scale",
+          label: "Tingkat Urgensi",
+          scaleMin: 1,
+          scaleMax: 5,
+          scaleMinLabel: "Rendah",
+          scaleMaxLabel: "Kritis",
+          required: true,
+          order: 4,
+        },
+      ];
+
+      for (const q of incidentQuestions) {
+        await db.insert(schema.questions).values({
+          id: uuidv4(),
+          formId: incidentFormId,
+          ...q,
+        } as any);
+      }
+      console.log("✅ Form created: Laporan Insiden Lapangan");
+    } catch (e) {
+      console.log("⚠️ Form Laporan Insiden Lapangan might already exist");
     }
   }
 

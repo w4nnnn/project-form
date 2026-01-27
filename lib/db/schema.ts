@@ -18,6 +18,7 @@ export const QuestionType = {
   DROPDOWN: "dropdown",
   DATE: "date",
   TIME: "time",
+  DATETIME: "datetime",
   FILE_UPLOAD: "file_upload",
   LINEAR_SCALE: "linear_scale",
   RATING: "rating",
