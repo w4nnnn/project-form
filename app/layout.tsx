@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Form Teknisi Bandara",
-  description: "Aplikasi manajemen form untuk teknisi bandara",
+  title: "Form App",
+  description: "Aplikasi manajemen",
 };
 
 export default function RootLayout({
