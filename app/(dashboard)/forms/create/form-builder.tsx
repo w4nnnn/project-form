@@ -238,21 +238,25 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         {/* Form Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Pengaturan Form</CardTitle>
+        <Card className="border-0 shadow-sm bg-card/50 backdrop-blur-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl font-medium tracking-tight">Pengaturan Form</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Judul Form</FormLabel>
+                  <FormLabel className="text-sm font-medium text-foreground/80">Judul Form</FormLabel>
                   <FormControl>
-                    <Input placeholder="Contoh: Checklist Harian Mesin" {...field} />
+                    <Input 
+                      placeholder="Contoh: Checklist Harian Mesin" 
+                      className="h-11 bg-background/50 border-muted-foreground/20 focus:border-primary/50 transition-colors"
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -263,10 +267,11 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Deskripsi (Opsional)</FormLabel>
+                  <FormLabel className="text-sm font-medium text-foreground/80">Deskripsi (Opsional)</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Deskripsi singkat tentang form ini"
+                      className="min-h-[100px] bg-background/50 border-muted-foreground/20 focus:border-primary/50 transition-colors resize-none"
                       {...field}
                     />
                   </FormControl>
@@ -274,16 +279,16 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="subRoleId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Target Teknisi</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground/80">Target Teknisi</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="h-11 bg-background/50 border-muted-foreground/20">
                           <SelectValue placeholder="Semua teknisi" />
                         </SelectTrigger>
                       </FormControl>
@@ -296,7 +301,7 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>
+                    <FormDescription className="text-xs text-muted-foreground/70">
                       Pilih jenis teknisi yang dapat mengisi form ini
                     </FormDescription>
                     <FormMessage />
@@ -307,10 +312,10 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
-                  <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel>Status Aktif</FormLabel>
-                      <FormDescription>
+                  <FormItem className="flex items-center justify-between rounded-xl border border-muted-foreground/10 bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+                    <div className="space-y-1">
+                      <FormLabel className="text-sm font-medium">Status Aktif</FormLabel>
+                      <FormDescription className="text-xs text-muted-foreground/70">
                         Form aktif dapat diisi oleh teknisi
                       </FormDescription>
                     </div>
@@ -325,10 +330,10 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
         </Card>
 
         {/* Questions */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Pertanyaan</h2>
-            <span className="text-sm text-muted-foreground">
+            <h2 className="text-xl font-medium tracking-tight">Pertanyaan</h2>
+            <span className="text-sm text-muted-foreground/70 bg-muted/50 px-3 py-1 rounded-full">
               {fields.length} pertanyaan
             </span>
           </div>
@@ -359,13 +364,18 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
           </DndContext>
 
           {/* Add Question */}
-          <Card className="border-dashed">
-            <CardContent className="pt-6">
-              <div className="text-center space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Tambah pertanyaan baru
-                </p>
-                <div className="flex flex-wrap justify-center gap-2">
+          <Card className="border border-dashed border-muted-foreground/20 bg-muted/20 hover:bg-muted/30 transition-colors">
+            <CardContent className="py-8">
+              <div className="text-center space-y-5">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground/70">
+                    Tambah pertanyaan baru
+                  </p>
+                  <p className="text-xs text-muted-foreground/60">
+                    Pilih tipe pertanyaan yang ingin ditambahkan
+                  </p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-2 max-w-2xl mx-auto">
                   {questionTypes.map((qt) => (
                     <Button
                       key={qt.value}
@@ -373,8 +383,9 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
                       variant="outline"
                       size="sm"
                       onClick={() => addQuestion(qt.value)}
+                      className="h-9 bg-background/60 border-muted-foreground/15 hover:bg-background hover:border-primary/30 hover:text-primary transition-all"
                     >
-                      <qt.icon className="mr-2 h-4 w-4" />
+                      <qt.icon className="mr-2 h-3.5 w-3.5" />
                       {qt.label}
                     </Button>
                   ))}
@@ -385,15 +396,20 @@ export function FormBuilder({ subRoles, initialData }: FormBuilderProps) {
         </div>
 
         {/* Submit */}
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-3 pt-4">
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             onClick={() => router.push("/forms")}
+            className="px-6 text-muted-foreground hover:text-foreground"
           >
             Batal
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button 
+            type="submit" 
+            disabled={isLoading}
+            className="px-6 shadow-sm hover:shadow-md transition-shadow"
+          >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             <Save className="mr-2 h-4 w-4" />
             {initialData ? "Update Form" : "Simpan Form"}
@@ -414,14 +430,14 @@ function SortableQuestionCard({ id, ...props }: SortableQuestionCardProps) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.9 : 1,
+    transition: transition || "transform 200ms cubic-bezier(0.25, 1, 0.5, 1)",
+    opacity: isDragging ? 0.95 : 1,
     zIndex: isDragging ? 50 : 1,
     position: "relative",
   } as const;
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="mb-4">
       <QuestionCard
         {...props}
         dragHandleAttributes={attributes}
@@ -494,26 +510,26 @@ function QuestionCard({
   const questionTypeInfo = questionTypes.find((qt) => qt.value === questionType);
 
   return (
-    <Card className={isDragging ? "border-primary/50 shadow-sm" : ""}>
-      <CardHeader className="pb-3">
+    <Card className={`border-0 shadow-sm transition-all duration-200 ${isDragging ? "shadow-lg ring-2 ring-primary/20 scale-[1.02]" : "hover:shadow-md bg-card/80 backdrop-blur-sm"}`}>
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+          <div className="flex items-center gap-3">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-xs font-medium text-primary">
               {index + 1}
             </span>
             {questionTypeInfo && (
-              <span className="text-sm text-muted-foreground flex items-center gap-1">
-                <questionTypeInfo.icon className="h-4 w-4" />
+              <span className="text-sm text-muted-foreground/80 flex items-center gap-1.5 bg-muted/50 px-2.5 py-1 rounded-md">
+                <questionTypeInfo.icon className="h-3.5 w-3.5" />
                 {questionTypeInfo.label}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="cursor-grab"
+              className="cursor-grab h-8 w-8 text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:cursor-grabbing"
               aria-label="Pindah pertanyaan"
               {...(dragHandleAttributes || {})}
               {...(dragHandleListeners || {})}
@@ -526,6 +542,7 @@ function QuestionCard({
               size="icon"
               onClick={onMoveUp}
               disabled={!canMoveUp}
+              className="h-8 w-8 text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 disabled:opacity-30"
             >
               <ChevronUp className="h-4 w-4" />
             </Button>
@@ -535,6 +552,7 @@ function QuestionCard({
               size="icon"
               onClick={onMoveDown}
               disabled={!canMoveDown}
+              className="h-8 w-8 text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 disabled:opacity-30"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>
@@ -544,23 +562,24 @@ function QuestionCard({
               size="icon"
               onClick={onRemove}
               disabled={!canRemove}
+              className="h-8 w-8 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 disabled:opacity-30"
             >
-              <Trash2 className="h-4 w-4 text-destructive" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5 pt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name={`questions.${index}.type`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tipe Pertanyaan</FormLabel>
+                <FormLabel className="text-sm font-medium text-foreground/80">Tipe Pertanyaan</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 bg-background/50 border-muted-foreground/15">
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
@@ -568,7 +587,7 @@ function QuestionCard({
                     {questionTypes.map((qt) => (
                       <SelectItem key={qt.value} value={qt.value}>
                         <span className="flex items-center gap-2">
-                          <qt.icon className="h-4 w-4" />
+                          <qt.icon className="h-3.5 w-3.5 text-muted-foreground" />
                           {qt.label}
                         </span>
                       </SelectItem>
@@ -583,8 +602,8 @@ function QuestionCard({
             control={form.control}
             name={`questions.${index}.required`}
             render={({ field }) => (
-              <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                <FormLabel>Wajib Diisi</FormLabel>
+              <FormItem className="flex items-center justify-between rounded-xl border border-muted-foreground/10 bg-muted/20 p-3 transition-colors hover:bg-muted/30">
+                <FormLabel className="text-sm font-medium text-foreground/80">Wajib Diisi</FormLabel>
                 <FormControl>
                   <Switch checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
@@ -598,9 +617,13 @@ function QuestionCard({
           name={`questions.${index}.label`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Pertanyaan</FormLabel>
+              <FormLabel className="text-sm font-medium text-foreground/80">Pertanyaan</FormLabel>
               <FormControl>
-                <Input placeholder="Masukkan pertanyaan" {...field} />
+                <Input 
+                  placeholder="Masukkan pertanyaan" 
+                  className="h-10 bg-background/50 border-muted-foreground/15 focus:border-primary/40 transition-colors"
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -612,9 +635,13 @@ function QuestionCard({
           name={`questions.${index}.description`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Deskripsi (Opsional)</FormLabel>
+              <FormLabel className="text-sm font-medium text-foreground/70">Deskripsi (Opsional)</FormLabel>
               <FormControl>
-                <Input placeholder="Deskripsi tambahan untuk pertanyaan" {...field} />
+                <Input 
+                  placeholder="Deskripsi tambahan untuk pertanyaan" 
+                  className="h-10 bg-background/50 border-muted-foreground/15 focus:border-primary/40 transition-colors text-muted-foreground"
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -623,27 +650,40 @@ function QuestionCard({
 
         {/* Options for multiple choice, checkboxes, dropdown */}
         {needsOptions && (
-          <div className="space-y-2">
-            <FormLabel>Opsi Jawaban</FormLabel>
-            {options.map((option, optIndex) => (
-              <div key={optIndex} className="flex items-center gap-2">
-                <Input
-                  value={option}
-                  onChange={(e) => updateOption(optIndex, e.target.value)}
-                  placeholder={`Opsi ${optIndex + 1}`}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeOption(optIndex)}
-                  disabled={options.length <= 1}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-            <Button type="button" variant="outline" size="sm" onClick={addOption}>
+          <div className="space-y-3 p-4 rounded-xl bg-muted/20 border border-muted-foreground/10">
+            <FormLabel className="text-sm font-medium text-foreground/80">Opsi Jawaban</FormLabel>
+            <div className="space-y-2">
+              {options.map((option, optIndex) => (
+                <div key={optIndex} className="flex items-center gap-2 group">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-muted/50 text-xs text-muted-foreground font-medium">
+                    {optIndex + 1}
+                  </div>
+                  <Input
+                    value={option}
+                    onChange={(e) => updateOption(optIndex, e.target.value)}
+                    placeholder={`Opsi ${optIndex + 1}`}
+                    className="h-9 bg-background/70 border-muted-foreground/15 focus:border-primary/40"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeOption(optIndex)}
+                    disabled={options.length <= 1}
+                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <Button 
+              type="button" 
+              variant="ghost" 
+              size="sm" 
+              onClick={addOption}
+              className="text-primary/80 hover:text-primary hover:bg-primary/10"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Tambah Opsi
             </Button>
@@ -652,17 +692,18 @@ function QuestionCard({
 
         {/* Linear Scale options */}
         {isLinearScale && (
-          <div className="space-y-4">
+          <div className="space-y-4 p-4 rounded-xl bg-muted/20 border border-muted-foreground/10">
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name={`questions.${index}.scaleMin`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nilai Minimum</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground/80">Nilai Minimum</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
+                        className="h-10 bg-background/70 border-muted-foreground/15"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
                       />
@@ -676,10 +717,11 @@ function QuestionCard({
                 name={`questions.${index}.scaleMax`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nilai Maximum</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground/80">Nilai Maximum</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
+                        className="h-10 bg-background/70 border-muted-foreground/15"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
                       />
@@ -695,9 +737,13 @@ function QuestionCard({
                 name={`questions.${index}.scaleMinLabel`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Label Minimum (Opsional)</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground/70">Label Minimum (Opsional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="Contoh: Sangat Buruk" {...field} />
+                      <Input 
+                        placeholder="Contoh: Sangat Buruk" 
+                        className="h-10 bg-background/70 border-muted-foreground/15"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -708,9 +754,13 @@ function QuestionCard({
                 name={`questions.${index}.scaleMaxLabel`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Label Maximum (Opsional)</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground/70">Label Maximum (Opsional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="Contoh: Sangat Baik" {...field} />
+                      <Input 
+                        placeholder="Contoh: Sangat Baik" 
+                        className="h-10 bg-background/70 border-muted-foreground/15"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -722,33 +772,38 @@ function QuestionCard({
 
         {/* Rating options */}
         {isRating && (
-          <FormField
-            control={form.control}
-            name={`questions.${index}.ratingMax`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Jumlah Bintang</FormLabel>
-                <Select
-                  onValueChange={(val) => field.onChange(parseInt(val))}
-                  value={field.value?.toString()}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {[3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                      <SelectItem key={n} value={n.toString()}>
-                        {n} bintang
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="p-4 rounded-xl bg-muted/20 border border-muted-foreground/10">
+            <FormField
+              control={form.control}
+              name={`questions.${index}.ratingMax`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-foreground/80">Jumlah Bintang</FormLabel>
+                  <Select
+                    onValueChange={(val) => field.onChange(parseInt(val))}
+                    value={field.value?.toString()}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="h-10 bg-background/70 border-muted-foreground/15 w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {[3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                        <SelectItem key={n} value={n.toString()}>
+                          <span className="flex items-center gap-2">
+                            <Star className="h-3.5 w-3.5 text-amber-500" />
+                            {n} bintang
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         )}
       </CardContent>
     </Card>

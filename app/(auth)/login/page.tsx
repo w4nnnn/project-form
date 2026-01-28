@@ -26,7 +26,7 @@ import {
 import { Loader2, Plane } from "lucide-react";
 
 const loginSchema = z.object({
-  email: z.string().email("Email tidak valid"),
+  username: z.string().min(1, "Username diperlukan"),
   password: z.string().min(1, "Password diperlukan"),
 });
 
@@ -42,7 +42,7 @@ function LoginForm() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
@@ -53,7 +53,7 @@ function LoginForm() {
 
     try {
       const result = await signIn("credentials", {
-        email: data.email,
+        username: data.username,
         password: data.password,
         redirect: false,
       });
@@ -72,38 +72,40 @@ function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-4">
-      <CardHeader className="space-y-1 text-center">
-        <div className="flex justify-center mb-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary">
+    <Card className="w-full max-w-md mx-4 shadow-xl border-border/40 bg-card/95 backdrop-blur-sm">
+      <CardHeader className="space-y-1 text-center pb-2">
+        <div className="flex justify-center mb-6">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
             <Plane className="h-8 w-8 text-primary-foreground" />
           </div>
         </div>
-        <CardTitle className="text-2xl font-bold">Form Teknisi Bandara</CardTitle>
-        <CardDescription>
-          Masukkan email dan password untuk login
+        <CardTitle className="text-2xl font-bold tracking-tight">Form Teknisi Bandara</CardTitle>
+        <CardDescription className="text-muted-foreground/80">
+          Masukkan username dan password untuk login
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+              <div className="p-4 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-destructive" />
                 {error}
               </div>
             )}
             <FormField
               control={form.control}
-              name="email"
+              name="username"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-medium">Username</FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
-                      placeholder="email@airport.com"
+                      type="text"
+                      placeholder="username"
                       {...field}
                       disabled={isLoading}
+                      className="h-12"
                     />
                   </FormControl>
                   <FormMessage />
@@ -114,21 +116,22 @@ function LoginForm() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-medium">Password</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       placeholder="••••••••"
                       {...field}
                       disabled={isLoading}
+                      className="h-12"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full h-12 text-base font-medium mt-2" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? "Memproses..." : "Login"}
             </Button>
@@ -144,7 +147,10 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className="flex justify-center items-center w-full max-w-md mx-4 min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-10 w-10 animate-spin text-primary/60" />
+            <p className="text-sm text-muted-foreground">Memuat...</p>
+          </div>
         </div>
       }
     >

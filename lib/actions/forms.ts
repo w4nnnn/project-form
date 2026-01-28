@@ -1,12 +1,22 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { forms, questions, responses, answers, QuestionType } from "@/lib/db/schema";
+import { forms, questions, responses, answers, subRoles, QuestionType } from "@/lib/db/schema";
 import { auth } from "@/lib/auth";
 import { eq, and, desc, or, isNull } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+
+type FormWithRelations = (typeof forms.$inferSelect) & {
+  subRole: typeof subRoles.$inferSelect | null;
+  questions: (typeof questions.$inferSelect)[];
+  createdBy: {
+    id: string;
+    name: string | null;
+    email: string | null;
+  } | null;
+};
 
 const questionSchema = z.object({
   type: z.enum([
@@ -42,7 +52,7 @@ const formSchema = z.object({
   questions: z.array(questionSchema),
 });
 
-export async function getForms() {
+export async function getForms(): Promise<FormWithRelations[]> {
   const session = await auth();
   if (!session) {
     throw new Error("Unauthorized");
@@ -54,13 +64,7 @@ export async function getForms() {
     return await db.query.forms.findMany({
       with: {
         subRole: true,
-        createdBy: {
-          columns: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+        createdBy: true,
         questions: true,
       },
       orderBy: [desc(forms.createdAt)],
@@ -72,13 +76,7 @@ export async function getForms() {
       where: eq(forms.createdById, session.user.id),
       with: {
         subRole: true,
-        createdBy: {
-          columns: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+        createdBy: true,
         questions: true,
       },
       orderBy: [desc(forms.createdAt)],
@@ -88,7 +86,7 @@ export async function getForms() {
   throw new Error("Unauthorized");
 }
 
-export async function getFormById(id: string) {
+export async function getFormById(id: string): Promise<FormWithRelations | null> {
   const session = await auth();
   if (!session) {
     throw new Error("Unauthorized");
@@ -98,13 +96,7 @@ export async function getFormById(id: string) {
     where: eq(forms.id, id),
     with: {
       subRole: true,
-      createdBy: {
-        columns: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
+      createdBy: true,
       questions: {
         orderBy: (questions, { asc }) => [asc(questions.order)],
       },

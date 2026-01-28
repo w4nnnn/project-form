@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getResponseById } from "@/lib/actions/responses";
+import { getResponseById, type ResponseWithRelations } from "@/lib/actions/responses";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -22,7 +22,7 @@ export default async function MyResponseDetailPage({ params }: MyResponseDetailP
     redirect("/login");
   }
 
-  const response = await getResponseById(responseId);
+  const response = (await getResponseById(responseId)) as ResponseWithRelations | null;
 
   if (!response) {
     redirect("/my-responses");

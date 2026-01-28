@@ -26,23 +26,23 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email dan password diperlukan");
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error("Username dan password diperlukan");
         }
 
         const user = await db.query.users.findFirst({
-          where: eq(users.email, credentials.email),
+          where: eq(users.email, credentials.username),
           with: {
             subRole: true,
           },
         });
 
         if (!user) {
-          throw new Error("Email tidak ditemukan");
+          throw new Error("Username tidak ditemukan");
         }
 
         if (!user.password) {
@@ -64,6 +64,7 @@ export const authOptions: NextAuthOptions = {
 
         return {
           id: user.id,
+          username: user.email,
           email: user.email,
           name: user.name,
           role: user.role,
@@ -77,6 +78,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.username = (user as any).username ?? user.email;
         token.role = user.role;
         token.subRoleId = user.subRoleId;
         token.subRoleName = user.subRoleName;
@@ -86,6 +88,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.username = token.username as string;
         session.user.role = token.role as string;
         session.user.subRoleId = token.subRoleId as string | null;
         session.user.subRoleName = token.subRoleName as string | null;

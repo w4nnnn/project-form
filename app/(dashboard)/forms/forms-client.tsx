@@ -35,7 +35,7 @@ interface FormsClientProps {
     subRole: SubRole | null; 
     questions: Question[];
     responseCount: number;
-    createdBy: { id: string; name: string | null; email: string } | null;
+    createdBy: { id: string; name: string | null; email: string | null } | null;
   })[];
   subRoles: (SubRole & { userCount: number })[];
 }
@@ -70,7 +70,7 @@ export function FormsClient({ forms, subRoles }: FormsClientProps) {
   return (
     <>
       <div className="flex justify-end">
-        <Button asChild>
+        <Button asChild className="shadow-sm">
           <Link href="/forms/create">
             <Plus className="mr-2 h-4 w-4" />
             Buat Form Baru
@@ -78,7 +78,7 @@ export function FormsClient({ forms, subRoles }: FormsClientProps) {
         </Button>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -94,23 +94,35 @@ export function FormsClient({ forms, subRoles }: FormsClientProps) {
           <TableBody>
             {forms.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                  Belum ada form. Klik &quot;Buat Form Baru&quot; untuk memulai.
+                <TableCell colSpan={7} className="text-center py-16 text-muted-foreground">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center">
+                      <Plus className="h-6 w-6 text-muted-foreground/50" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">Belum ada form</p>
+                      <p className="text-sm">Klik &quot;Buat Form Baru&quot; untuk memulai.</p>
+                    </div>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
               forms.map((form) => (
-                <TableRow key={form.id}>
+                <TableRow key={form.id} className="group">
                   <TableCell className="font-medium">{form.title}</TableCell>
                   <TableCell>
                     {form.subRole ? (
                       <Badge variant="secondary">{form.subRole.name}</Badge>
                     ) : (
-                      <span className="text-muted-foreground">Semua</span>
+                      <Badge variant="outline" className="text-muted-foreground">Semua</Badge>
                     )}
                   </TableCell>
-                  <TableCell>{form.questions.length}</TableCell>
-                  <TableCell>{form.responseCount}</TableCell>
+                  <TableCell>
+                    <span className="font-medium">{form.questions.length}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-medium">{form.responseCount}</span>
+                  </TableCell>
                   <TableCell>
                     <Switch
                       checked={form.isActive}
@@ -121,26 +133,27 @@ export function FormsClient({ forms, subRoles }: FormsClientProps) {
                     {format(form.createdAt, "dd MMM yyyy", { locale: id })}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon" asChild>
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <Button variant="ghost" size="icon-sm" asChild className="hover:bg-primary/10 hover:text-primary">
                         <Link href={`/forms/${form.id}/edit`}>
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <Button variant="ghost" size="icon" asChild>
+                      <Button variant="ghost" size="icon-sm" asChild className="hover:bg-primary/10 hover:text-primary">
                         <Link href={`/forms/${form.id}/responses`}>
                           <Eye className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <Button variant="ghost" size="icon" asChild>
+                      <Button variant="ghost" size="icon-sm" asChild className="hover:bg-primary/10 hover:text-primary">
                         <Link href={`/forms/${form.id}/analytics`}>
                           <BarChart2 className="h-4 w-4" />
                         </Link>
                       </Button>
                       <Button
                         variant="ghost"
-                        size="icon"
+                        size="icon-sm"
                         onClick={() => setDeletingForm(form)}
+                        className="hover:bg-destructive/10"
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>

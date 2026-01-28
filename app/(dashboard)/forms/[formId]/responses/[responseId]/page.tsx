@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getResponseById } from "@/lib/actions/responses";
+import { getResponseById, type ResponseWithRelations } from "@/lib/actions/responses";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -22,7 +22,7 @@ export default async function ResponseDetailPage({ params }: ResponseDetailPageP
     redirect("/dashboard");
   }
 
-  const response = await getResponseById(responseId);
+  const response = (await getResponseById(responseId)) as ResponseWithRelations | null;
 
   if (!response) {
     redirect(`/forms/${formId}/responses`);
@@ -125,7 +125,7 @@ export default async function ResponseDetailPage({ params }: ResponseDetailPageP
           </div>
           <Separator />
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Email</span>
+            <span className="text-muted-foreground">Username</span>
             <span className="font-medium">{response.user?.email || "-"}</span>
           </div>
           <Separator />

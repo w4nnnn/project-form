@@ -13,10 +13,10 @@ export default async function CreateFormPage() {
   const subRoles = await getSubRoles();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Buat Form Baru</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-8 animate-fade-in">
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Buat Form Baru</h1>
+        <p className="text-muted-foreground/80">
           Buat form dengan berbagai jenis pertanyaan
         </p>
       </div>

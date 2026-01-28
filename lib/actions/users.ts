@@ -11,7 +11,7 @@ import { z } from "zod";
 
 const userSchema = z.object({
   name: z.string().min(1, "Nama diperlukan"),
-  email: z.string().email("Email tidak valid"),
+  username: z.string().min(3, "Username minimal 3 karakter"),
   password: z.string().min(6, "Password minimal 6 karakter").optional(),
   role: z.enum(["superadmin", "admin", "teknisi"]),
   subRoleId: z.string().optional().nullable(),
@@ -42,13 +42,13 @@ export async function createUser(data: z.infer<typeof userSchema>) {
 
   const validated = userSchema.parse(data);
 
-  // Check if email already exists
+  // Check if username already exists
   const existing = await db.query.users.findFirst({
-    where: eq(users.email, validated.email),
+    where: eq(users.email, validated.username),
   });
 
   if (existing) {
-    throw new Error("Email sudah terdaftar");
+    throw new Error("Username sudah terdaftar");
   }
 
   if (!validated.password) {
@@ -60,7 +60,7 @@ export async function createUser(data: z.infer<typeof userSchema>) {
   await db.insert(users).values({
     id: uuidv4(),
     name: validated.name,
-    email: validated.email,
+    email: validated.username,
     password: hashedPassword,
     role: validated.role,
     subRoleId: validated.role === "teknisi" ? validated.subRoleId : null,
@@ -82,7 +82,7 @@ export async function updateUser(
 
   const updateData: Record<string, unknown> = {
     name: data.name,
-    email: data.email,
+    email: data.username,
     role: data.role,
     subRoleId: data.role === "teknisi" ? data.subRoleId : null,
     isActive: data.isActive,

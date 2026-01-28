@@ -57,7 +57,7 @@ import type { User, SubRole } from "@/lib/db/schema";
 
 const userSchema = z.object({
   name: z.string().min(1, "Nama diperlukan"),
-  email: z.string().email("Email tidak valid"),
+  username: z.string().min(3, "Username minimal 3 karakter"),
   password: z.string().min(6, "Password minimal 6 karakter").optional().or(z.literal("")),
   role: z.enum(["superadmin", "admin", "teknisi"]),
   subRoleId: z.string().optional(),
@@ -81,7 +81,7 @@ export function UsersClient({ users, subRoles }: UsersClientProps) {
     resolver: zodResolver(userSchema),
     defaultValues: {
       name: "",
-      email: "",
+      username: "",
       password: "",
       role: "teknisi",
       subRoleId: "",
@@ -94,7 +94,7 @@ export function UsersClient({ users, subRoles }: UsersClientProps) {
   const resetForm = () => {
     form.reset({
       name: "",
-      email: "",
+      username: "",
       password: "",
       role: "teknisi",
       subRoleId: "",
@@ -165,7 +165,7 @@ export function UsersClient({ users, subRoles }: UsersClientProps) {
   const openEditDialog = (user: User & { subRole: SubRole | null }) => {
     form.reset({
       name: user.name || "",
-      email: user.email,
+      username: user.email,
       password: "",
       role: user.role as "superadmin" | "admin" | "teknisi",
       subRoleId: user.subRoleId || "",
@@ -192,7 +192,7 @@ export function UsersClient({ users, subRoles }: UsersClientProps) {
       <div className="flex justify-end">
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm}>
+            <Button onClick={resetForm} className="shadow-sm">
               <Plus className="mr-2 h-4 w-4" />
               Tambah User
             </Button>
@@ -221,12 +221,12 @@ export function UsersClient({ users, subRoles }: UsersClientProps) {
                 />
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="email@airport.com" {...field} />
+                        <Input type="text" placeholder="username unik" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -324,7 +324,7 @@ export function UsersClient({ users, subRoles }: UsersClientProps) {
           <TableHeader>
             <TableRow>
               <TableHead>Nama</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead>Username</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Aksi</TableHead>
@@ -400,12 +400,12 @@ export function UsersClient({ users, subRoles }: UsersClientProps) {
               />
               <FormField
                 control={form.control}
-                name="email"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="email@airport.com" {...field} />
+                      <Input type="text" placeholder="username unik" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

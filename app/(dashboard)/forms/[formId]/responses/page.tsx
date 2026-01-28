@@ -65,7 +65,7 @@ export default async function ResponsesPage({ params }: ResponsesPageProps) {
                 <TableRow>
                   <TableHead>No</TableHead>
                   <TableHead>Nama</TableHead>
-                  <TableHead>Email</TableHead>
+                  <TableHead>Username</TableHead>
                   <TableHead>Waktu Pengisian</TableHead>
                   <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>

@@ -8,6 +8,20 @@ import { v4 as uuidv4 } from "uuid";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+type FormWithQuestions = (typeof forms.$inferSelect) & {
+  questions: (typeof questions.$inferSelect)[];
+};
+
+export type ResponseWithRelations = (typeof responses.$inferSelect) & {
+  user: {
+    id: string;
+    name: string | null;
+    email: string | null;
+  } | null;
+  form: FormWithQuestions;
+  answers: (typeof answers.$inferSelect)[];
+};
+
 const answerSchema = z.object({
   questionId: z.string(),
   value: z.string().optional().nullable(),
@@ -85,7 +99,7 @@ export async function submitResponse(data: z.infer<typeof submitResponseSchema>)
   return { success: true, responseId };
 }
 
-export async function getFormResponses(formId: string) {
+export async function getFormResponses(formId: string): Promise<{ form: FormWithQuestions; responses: ResponseWithRelations[] }> {
   const session = await auth();
   if (!session || (session.user.role !== "superadmin" && session.user.role !== "admin")) {
     throw new Error("Unauthorized");
@@ -124,8 +138,8 @@ export async function getFormResponses(formId: string) {
   });
 
   return {
-    form,
-    responses: formResponses,
+    form: form as FormWithQuestions,
+    responses: formResponses as ResponseWithRelations[],
   };
 }
 
@@ -150,7 +164,7 @@ export async function getMyResponses() {
   });
 }
 
-export async function getResponseById(responseId: string) {
+export async function getResponseById(responseId: string): Promise<ResponseWithRelations | null> {
   const session = await auth();
   if (!session) {
     throw new Error("Unauthorized");
@@ -190,7 +204,7 @@ export async function getResponseById(responseId: string) {
     throw new Error("Unauthorized");
   }
 
-  return response;
+  return response as ResponseWithRelations;
 }
 
 export async function getFormStatistics(formId: string) {

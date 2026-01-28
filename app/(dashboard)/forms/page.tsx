@@ -7,6 +7,8 @@ import { responses } from "@/lib/db/schema";
 import { eq, count } from "drizzle-orm";
 import { FormsClient } from "./forms-client";
 
+type FormItem = Awaited<ReturnType<typeof getForms>>[number];
+
 export default async function FormsPage() {
   const session = await auth();
 
@@ -17,7 +19,7 @@ export default async function FormsPage() {
   const [forms, subRoles] = await Promise.all([getForms(), getSubRoles()]);
 
   // Get response count for each form
-  const formsWithResponses = await Promise.all(
+  const formsWithResponses: (FormItem & { responseCount: number })[] = await Promise.all(
     forms.map(async (form) => {
       const [responseCount] = await db
         .select({ count: count() })
@@ -26,15 +28,16 @@ export default async function FormsPage() {
       return {
         ...form,
         responseCount: responseCount.count,
+        createdBy: form.createdBy ?? null,
       };
     })
   );
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Kelola Form</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-8 animate-fade-in">
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Kelola Form</h1>
+        <p className="text-muted-foreground/80">
           Buat, edit, atau hapus form untuk teknisi
         </p>
       </div>

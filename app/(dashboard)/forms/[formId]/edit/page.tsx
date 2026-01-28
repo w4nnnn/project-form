@@ -4,6 +4,8 @@ import { getFormById } from "@/lib/actions/forms";
 import { getSubRoles } from "@/lib/actions/sub-roles";
 import { FormBuilder } from "../../create/form-builder";
 
+type FormDetail = NonNullable<Awaited<ReturnType<typeof getFormById>>>;
+
 interface EditFormPageProps {
   params: Promise<{ formId: string }>;
 }
@@ -34,7 +36,7 @@ export default async function EditFormPage({ params }: EditFormPageProps) {
         </p>
       </div>
 
-      <FormBuilder subRoles={subRoles} initialData={form} />
+      <FormBuilder subRoles={subRoles} initialData={form as FormDetail} />
     </div>
   );
 }

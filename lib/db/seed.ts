@@ -5,7 +5,14 @@ import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 import path from "path";
 
-const sqlite = new Database(path.join(process.cwd(), "data.db"));
+const dbUrl = process.env.DB_URL!;
+const resolvedPath = dbUrl.startsWith("file:")
+  ? dbUrl.replace("file:", "")
+  : path.isAbsolute(dbUrl)
+    ? dbUrl
+    : path.join(process.cwd(), dbUrl);
+
+const sqlite = new Database(resolvedPath);
 const db = drizzle(sqlite, { schema });
 
 async function seed() {
@@ -37,12 +44,12 @@ async function seed() {
     await db.insert(schema.users).values({
       id: superadminId,
       name: "Super Admin",
-      email: "admin@airport.com",
+      email: "superadmin",
       password: superadminPassword,
       role: "superadmin",
       isActive: true,
     });
-    console.log("✅ Superadmin created: admin@airport.com / admin123");
+    console.log("✅ Superadmin created: superadmin / admin123");
   } catch (error) {
     console.log("⚠️ Superadmin already exists");
   }
@@ -55,12 +62,12 @@ async function seed() {
     await db.insert(schema.users).values({
       id: adminId,
       name: "Admin",
-      email: "formadmin@airport.com",
+      email: "admin",
       password: adminPassword,
       role: "admin",
       isActive: true,
     });
-    console.log("✅ Admin created: formadmin@airport.com / admin123");
+    console.log("✅ Admin created: admin / admin123");
   } catch (error) {
     console.log("⚠️ Admin already exists");
   }
@@ -75,13 +82,13 @@ async function seed() {
       await db.insert(schema.users).values({
         id: uuidv4(),
         name: `Teknisi ${subRole.name.split(" ")[1]}`,
-        email: `teknisi${i + 1}@airport.com`,
+        email: `teknisi${i + 1}`,
         password: teknisiPassword,
         role: "teknisi",
         subRoleId: subRole.id,
         isActive: true,
       });
-      console.log(`✅ Teknisi created: teknisi${i + 1}@airport.com / teknisi123 (${subRole.name})`);
+      console.log(`✅ Teknisi created: teknisi${i + 1} / teknisi123 (${subRole.name})`);
     } catch (error) {
       console.log(`⚠️ Teknisi ${i + 1} already exists`);
     }
@@ -92,7 +99,7 @@ async function seed() {
 
   // Get Admin ID (either freshly created or existing)
   const adminUser = await db.query.users.findFirst({
-    where: (users, { eq }) => eq(users.email, "formadmin@airport.com"),
+    where: (users, { eq }) => eq(users.email, "admin"),
   });
 
   if (adminUser) {
@@ -223,11 +230,11 @@ async function seed() {
 
   console.log("\n🎉 Seed completed!");
   console.log("\n📋 Login credentials:");
-  console.log("   Superadmin: admin@airport.com / admin123");
-  console.log("   Admin: formadmin@airport.com / admin123");
-  console.log("   Teknisi 1: teknisi1@airport.com / teknisi123");
-  console.log("   Teknisi 2: teknisi2@airport.com / teknisi123");
-  console.log("   Teknisi 3: teknisi3@airport.com / teknisi123");
+  console.log("   Superadmin: superadmin / admin123");
+  console.log("   Admin: admin / admin123");
+  console.log("   Teknisi 1: teknisi1 / teknisi123");
+  console.log("   Teknisi 2: teknisi2 / teknisi123");
+  console.log("   Teknisi 3: teknisi3 / teknisi123");
 
   sqlite.close();
 }

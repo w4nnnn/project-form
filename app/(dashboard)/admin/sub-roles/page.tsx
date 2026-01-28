@@ -13,10 +13,10 @@ export default async function SubRolesPage() {
   const subRoles = await getSubRoles();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Kelola Sub-Role</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-8 animate-fade-in">
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Kelola Sub-Role</h1>
+        <p className="text-muted-foreground/80">
           Kelola jenis-jenis teknisi yang ada di sistem
         </p>
       </div>

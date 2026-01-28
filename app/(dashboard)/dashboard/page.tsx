@@ -122,24 +122,26 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Selamat datang, {session.user.name}!
+    <div className="space-y-8 animate-fade-in">
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground/80">
+          Selamat datang kembali, <span className="font-medium text-foreground">{session.user.name}</span>!
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              {stat.icon}
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, index) => (
+          <Card key={stat.title} className="group hover-lift" style={{ animationDelay: `${index * 50}ms` }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
+              <div className="h-9 w-9 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
+                {stat.icon}
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">{stat.description}</p>
+              <div className="text-3xl font-bold tracking-tight">{stat.value}</div>
+              <p className="text-xs text-muted-foreground/70 mt-1">{stat.description}</p>
             </CardContent>
           </Card>
         ))}

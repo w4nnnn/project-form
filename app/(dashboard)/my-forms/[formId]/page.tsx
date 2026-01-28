@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getFormById } from "@/lib/actions/forms";
 import { FormFiller } from "./form-filler";
 
+type FormDetail = NonNullable<Awaited<ReturnType<typeof getFormById>>>;
+
 interface FillFormPageProps {
   params: Promise<{ formId: string }>;
 }
@@ -35,7 +37,7 @@ export default async function FillFormPage({ params }: FillFormPageProps) {
         )}
       </div>
 
-      <FormFiller form={form} />
+      <FormFiller form={form as FormDetail} />
     </div>
   );
 }

@@ -7,6 +7,8 @@ import { responses } from "@/lib/db/schema";
 import { eq, count } from "drizzle-orm";
 import { FormsClient } from "../../forms/forms-client";
 
+type FormItem = Awaited<ReturnType<typeof getForms>>[number];
+
 export default async function AdminFormsPage() {
   const session = await auth();
 
@@ -17,7 +19,7 @@ export default async function AdminFormsPage() {
   const [forms, subRoles] = await Promise.all([getForms(), getSubRoles()]);
 
   // Get response count for each form
-  const formsWithResponses = await Promise.all(
+  const formsWithResponses: (FormItem & { responseCount: number })[] = await Promise.all(
     forms.map(async (form) => {
       const [responseCount] = await db
         .select({ count: count() })
@@ -26,6 +28,7 @@ export default async function AdminFormsPage() {
       return {
         ...form,
         responseCount: responseCount.count,
+        createdBy: form.createdBy ?? null,
       };
     })
   );

@@ -26,64 +26,69 @@ export default async function MyResponsesPage() {
   const responses = await getMyResponses();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Riwayat Pengisian</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-8 animate-fade-in">
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Riwayat Pengisian</h1>
+        <p className="text-muted-foreground/80">
           Form yang sudah Anda isi
         </p>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <History className="h-5 w-5" />
-            {responses.length} Pengisian
+        <CardHeader className="border-b border-border/50">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <History className="h-4 w-4 text-primary" />
+            </div>
+            <span>{responses.length} Pengisian</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>No</TableHead>
+                <TableHead>Form</TableHead>
+                <TableHead>Waktu Pengisian</TableHead>
+                <TableHead className="text-right">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {responses.length === 0 ? (
                 <TableRow>
-                  <TableHead>No</TableHead>
-                  <TableHead>Form</TableHead>
-                  <TableHead>Waktu Pengisian</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
+                  <TableCell colSpan={4} className="text-center py-16 text-muted-foreground">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center">
+                        <History className="h-6 w-6 text-muted-foreground/50" />
+                      </div>
+                      <p>Belum ada pengisian form</p>
+                    </div>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {responses.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                      Belum ada pengisian form
+              ) : (
+                responses.map((response, index) => (
+                  <TableRow key={response.id} className="group">
+                    <TableCell className="font-medium text-muted-foreground">{index + 1}</TableCell>
+                    <TableCell className="font-medium">
+                      {response.form?.title || "-"}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {format(response.submittedAt, "dd MMM yyyy HH:mm", {
+                        locale: id,
+                      })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="icon-sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/10 hover:text-primary">
+                        <Link href={`/my-responses/${response.id}`}>
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      </Button>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  responses.map((response, index) => (
-                    <TableRow key={response.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell className="font-medium">
-                        {response.form?.title || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {format(response.submittedAt, "dd MMM yyyy HH:mm", {
-                          locale: id,
-                        })}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" asChild>
-                          <Link href={`/my-responses/${response.id}`}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>
