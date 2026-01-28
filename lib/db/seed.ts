@@ -4,8 +4,15 @@ import * as schema from "./schema";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 import path from "path";
+import { config } from "dotenv";
 
-const dbUrl = process.env.DB_URL!;
+config({ path: ".env.local" });
+
+const dbUrl = process.env.DB_URL;
+
+if (!dbUrl) {
+  throw new Error("DB_URL is required. Set it in your environment or .env.local");
+}
 const resolvedPath = dbUrl.startsWith("file:")
   ? dbUrl.replace("file:", "")
   : path.isAbsolute(dbUrl)
